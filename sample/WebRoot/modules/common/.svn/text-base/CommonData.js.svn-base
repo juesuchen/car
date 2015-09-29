@@ -1,0 +1,17 @@
+Ext.define('Ext.easy.CommonData', {
+			singleton : true,
+			alternateClassName : 'CDM',
+			currency : [['RMB', '人民币-RMB'], ['HKD', '港币-HKD'], ['NTD', '台币-NTD'],
+					['USD', '美元-USD'], ['EUR', '欧元-EUR'], ['GBP', '英镑-GBP']],
+			
+            gender : [['F', '女-F'],
+                    ['M', '男-M'],
+                    ['B', 'BOTH-B']],
+            pageSize : [[15,15],[30,30],[50,50],[100,100],[300,300],[500,500],[1000,1000]],
+            category : [],/*已在产品配置中加载*/
+            brandName : []/*已在产品配置中加载*/
+		});
+/*加载基础数据失败调用*/
+var loadBaseDataFailureFun = function(){
+	Ext.Msg.alert('操作提示', "服务不可用,读取基础数据失败!");
+};

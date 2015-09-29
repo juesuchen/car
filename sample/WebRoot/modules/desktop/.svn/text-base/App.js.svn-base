@@ -1,0 +1,113 @@
+/*!
+ * Ext JS Library 4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
+ */
+
+Ext.define('MyDesktop.App', {
+    extend: 'Ext.ux.desktop.App',
+
+    requires: [
+			    'Ext.ux.desktop.ShortcutModel',
+                'Ext.easy.Util',
+                'Ext.easy.CommonData',
+	            'MyDesktop.Settings',
+	            'Ext.Sample.SampleData'
+            ],
+
+    init: function() {
+        this.callParent();
+        windowHight = Ext.getBody().getHeight() - 38;
+    },
+
+    getModules : function(){
+        var modules = [];
+        Ext.each(modelDatas,function(item){
+            var cls = eval(item.className);
+            modules.push(new cls({id:item.type,launcherText:item.name,iconCls:item.type}));
+        });
+        return modules;
+        
+    },
+
+    getDesktopConfig: function () {
+        var me = this, ret = me.callParent();
+        /*如果有设置桌面，则更新*/
+		var wallpaper = Ext.util.Cookies.get('wallpaper');
+		if(!Ext.isEmpty(wallpaper))
+			Ext.apply(ret,{wallpaper : wallpaper});
+        return Ext.applyIf(ret, {
+            //cls: 'ux-desktop-black',
+
+            contextMenuItems: [
+                { text: '桌面设置', handler: me.onSettings, scope: me }
+            ],
+
+            shortcuts: Ext.create('Ext.data.Store', {
+                model: 'Ext.ux.desktop.ShortcutModel',
+                data: modelDatas
+            }),
+
+            wallpaper: 'resources/wallpapers/desk.jpg',
+            wallpaperStretch: true
+        });
+    },
+
+    // config for the start menu
+    getStartConfig : function() {
+        var me = this, ret = me.callParent();
+
+        return Ext.apply(ret, {
+            title: '欢迎您, ' + ' ,今天是 ' + Ext.util.Format.date(new Date(),'Y-m-d'),
+            iconCls: 'user',
+            height: 300,
+            toolConfig: {
+                width: 100,
+                items: [
+                    {
+                        text:'设置',
+                        iconCls:'settings',
+                        handler: me.onSettings,
+                        scope: me
+                    },
+                    '-',
+                    {
+                        text:'注销',
+                        iconCls:'logout',
+                        handler: me.onLogout,
+                        scope: me
+                    }
+                ]
+            }
+        });
+    },
+
+    getTaskbarConfig: function () {
+        var ret = this.callParent();
+
+        return Ext.apply(ret, {
+            quickStart: [
+                
+            ],
+            trayItems: [
+                { xtype: 'trayclock', flex: 1 }
+            ]
+        });
+    },
+
+    onLogout: function () {
+        Ext.Msg.confirm('登出', '确认退出登陆?',function(btn){
+        	if (btn == 'yes') {
+        		window.location = 'login.html';
+        	}
+        });
+    },
+
+    onSettings: function () {
+        var dlg = new MyDesktop.Settings({
+            desktop: this.desktop
+        });
+        dlg.show();
+    }
+});

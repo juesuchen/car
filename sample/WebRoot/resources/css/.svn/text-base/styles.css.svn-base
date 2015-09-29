@@ -1,0 +1,180 @@
+.x-table-layout { /* fix for form elements with no border clipping */
+    width: 100%;
+}
+.x-table-form-layout-ct .x-table-layout-cell .x-form-field { /* fix for form elements with no border clipping */
+    margin: 0px;
+}
+.x-table-form-layout-ct .x-table-layout-cell .x-form-trigger { /* ie fix for trigger field positioning */
+    margin-top: 0px;
+}
+/*Ext.ux.RangeField css begin*/
+.x-form-rangefield-wrap {
+
+}
+.x-form-item {
+font:12px tahoma,arial,helvetica,sans-serif;
+}
+
+.x-grid3-hd-row td {
+font:12px arial,tahoma,helvetica,sans-serif;
+}
+
+.x-grid3-row td, .x-grid3-summary-row td {
+font:12px arial,tahoma,helvetica,sans-serif;
+}
+
+.x-form-rangefield-control{
+	float:left;
+	margin:0px;
+	padding:0px;
+}
+.x-form-rangefield-split{
+	float:left;
+	padding:0;
+	margin:0;
+	height:22px;
+	line-height:22px;	
+	width:6px;
+	text-align:center;
+}
+/*Ext.ux.RangeField css end*/
+.topHeadText {
+	font-size: 20px;
+	text-align: center;
+}
+.float-left-begin {
+	float:left;
+}
+.float-left {
+	float:left;
+	padding:0 0 0 20px;
+}
+.labelTxtCls {
+	color : black;
+	font-weight: bold;
+}
+.greenLabelTxtCls {
+	color : green;
+}
+.labelBoldTxtCls {
+	font-weight: bold;
+}
+.fontSize20px {
+	font-size: 20px;
+	text-align: center;
+}
+.redLabel {
+	color: red;
+	padding:3px;
+}
+.clickLabel {
+	cursor : pointer;
+	text-decoration: underline;
+}
+.labelFieldSize{
+	padding:3px;
+}
+.complete{
+	font-weight: bolder;
+	
+}
+element {
+	color:white;	
+}
+/*print css begin*/
+.mytable {
+	padding: 3px;
+	line-height: 25px;
+	background-color: #ffffff;
+	color: #000000;
+	font-size: 14px;
+	border: 0px #9CC0EF solid;
+	width: 800px;
+}
+.importantInof {
+	font-weight: bold;
+}
+.underline{
+	text-decoration: underline;
+}
+/*print css end*/
+.save{
+	background-image:url(../images/diy/save.png) !important;
+}
+.add {
+    background-image:url(../images/diy/add.gif) !important;
+}
+.option {
+    background-image:url(../images/diy/plugin.gif) !important;
+}
+.remove {
+    background-image:url(../images/diy/delete.gif) !important;
+}
+.edit {
+    background-image:url(../images/diy/edit.png) !important;
+}
+.accept {
+    background-image:url(../images/diy/accept.png) !important;
+}
+.query {
+    background-image:url(../images/diy/zoom.png) !important;
+}
+.view {
+    background-image:url(../images/diy/view.png) !important;
+}
+.print {
+    background-image:url(../images/diy/printer.png) !important;
+}
+.genFile {
+    background-image:url(../images/diy/genFile.png) !important;
+}
+.approval {
+    background-image:url(../images/diy/approval.png) !important;
+}
+.fun {
+    background-image:url(../images/diy/fun.png) !important;
+}
+.back {
+    background-image:url(../images/diy/back.png) !important;
+}
+.report {
+    background-image:url(../images/diy/excel.png) !important;
+}
+.user {
+    background-image:url( ../images/diy/user.gif ) !important;
+}
+.upload-icon {
+    background-image:url( ../images/diy/image_add.png ) !important;
+}
+.lockopen {
+    background-image:url( ../images/diy/lockopen.png ) !important;
+}
+
+/*lovcombo css begin*/
+.ux-lovcombo-icon {
+	width:16px;
+	height:16px;
+	float:left;
+	background-position: -1px -1px ! important;
+	background-repeat:no-repeat ! important;
+}
+.ux-lovcombo-icon-checked {
+	background: transparent url(../../ext4/resources/themes/images/default/menu/checked.gif);
+}
+.ux-lovcombo-icon-unchecked {
+	background: transparent url(../../ext4/resources/themes/images/default/menu/unchecked.gif);
+}
+/* IE patch */
+.ux-lovcombo-item-text {
+	position:absolute;
+	left:16px;
+	top:3px;
+}
+.ux-lovcombo-icon {
+	float:none;
+}
+.x-combo-list-item {
+	position:relative;
+}
+
+/*lovcombo css end*/
