@@ -1,0 +1,42 @@
+<project name="js.build" default="clean" basedir="../">
+	<description>js.build for ANT</description>
+	<property name="src" location="js/ux" />
+	<property name="build" location="build" />
+	<property name="target" location="js" />
+	<property name="lib" location="ant-build/lib" />
+	<property name="charset" value="utf-8" />
+
+	<target name="init">
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="concat" depends="init">
+		<concat destfile="${build}/easyCore.js" encoding="${charset}"
+			outputencoding="${charset}">
+			
+			<path path="${src}/ProgressBarPager.js" />
+			<path path="${src}/EasyCombo.js" />
+			<path path="${src}/MultiSelectCombo.js" />
+			<path path="${src}/EasyGrid.js" />
+			<path path="${src}/EasyGridQuery.js" />
+			<path path="${src}/EasyGridCellEdit.js" />
+			<path path="${src}/IconBrowser.js" />
+			<path path="${src}/Util.js" />
+		</concat>
+		<replaceregexp match="debugger;" replace="" flags="g"
+			byline="true" file="${build}/easyCore.js" encoding="${charset}" />
+	</target>
+
+	<target name="compress" depends="concat">
+		<java jar="${lib}/yuicompressor-2.4.2.jar" fork="true">
+			<arg
+				line="--type js --charset utf-8 ${build}/easyCore.js -o ${target}/myux-all.js" />
+		</java>
+
+	</target>
+
+	<target name="clean" depends="compress">
+		<delete dir="${build}" />
+	</target>
+
+</project>

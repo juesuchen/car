@@ -1,0 +1,54 @@
+<project name="js.build" default="clean" basedir="../">
+	<description>js.build for ANT</description>
+	<property name="src" location="modules" />
+	<property name="build" location="build" />
+	<property name="target" location="js" />
+	<property name="lib" location="ant-build/lib" />
+	<property name="charset" value="utf-8" />
+
+	<target name="init">
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="concat" depends="init">
+		<concat destfile="${build}/modulesCore.js" encoding="${charset}"
+			outputencoding="${charset}">
+			
+			<path path="${src}/common/CommonData.js" />
+			<path path="${src}/common/BaseElementsConfigs.js" />
+			
+			<path path="${src}/privilege/FunctionNodes.js" />
+			<path path="${src}/privilege/PrivilegeData.js" />
+			<path path="${src}/privilege/PrivilegeDataElementsConfigs.js" />
+			<path path="${src}/privilege/PrivilegeDataMainPanel.js" />
+			
+			<path path="${src}/desktop/Settings.js" />
+			<path path="${src}/desktop/WallpaperModel.js" />
+			<path path="${src}/desktop/App.js" />
+			
+			<!-- 在此加上自定义模块脚本 -->
+			
+			
+			
+			
+			
+			<path path="app.js" />
+			
+		</concat>
+		<replaceregexp match="debugger;" replace="" flags="g"
+			byline="true" file="${build}/modulesCore.js" encoding="${charset}" />
+	</target>
+
+	<target name="compress" depends="concat">
+		<java jar="${lib}/yuicompressor-2.4.2.jar" fork="true">
+			<arg
+				line="--type js --charset utf-8 ${build}/modulesCore.js -o ${target}/modulesCore.js" />
+		</java>
+
+	</target>
+
+	<target name="clean" depends="compress">
+		<delete dir="${build}" />
+	</target>
+
+</project>

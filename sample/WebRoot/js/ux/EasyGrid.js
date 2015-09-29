@@ -1,0 +1,468 @@
+Ext.define('Ext.ux.EasyGrid', {
+	extend : 'Ext.grid.Panel',
+	requires : ['Ext.ux.ProgressBarPager','Ext.grid.RowNumberer'],
+	alias : ['widget.easygrid'],
+	initComponent : function() {
+		if (!this.noAutoHeight)
+			this.autoHeight = true;
+		this.pageSize = 15;
+		if (!this.noNeddForceFit) {
+			this.forceFit = true;
+		}
+		this.createStore();
+		this.createColumns();
+		this.createTbar();
+		this.createBbar();
+		if(this.needCheckboxColumn){
+			this.selModel = Ext.create('Ext.selection.CheckboxModel',{injectCheckbox : 'last'})
+		}
+		this.callParent();
+	},
+	initEvents : function() {
+		this.callParent();
+		if(!this.noNeedDbClick)
+			this.on('itemdblclick', Ext.bind(this.dbClickFun, this));
+        if(this.disabledBtn)        
+            this.setDisabledBtn(true);
+        
+	},
+	getReaderFields : function() {
+		var readerFields = [];
+		this.fields.each(function(item) {
+					var cfg = {
+						name : item.name,
+						defaultValue : item.value || item.defaultValue || ''
+					};
+					if (item.xtype == 'datefield') {
+						Ext.apply(cfg, {
+									type : 'date',
+									dateFormat : item.format
+								})
+					}
+					readerFields.push(cfg);
+					return true;
+				});
+		return readerFields;
+	},
+
+	createStore : function() {
+		var cfg = {
+			fields : this.getReaderFields(),
+			autoLoad : true
+		};
+        if(this.noAutoLoad)
+            cfg['autoLoad'] = false;
+		if (this.data) {
+			cfg['data'] = this.data;
+		}
+		if(!this.data || this.needAjax){
+			cfg['pageSize'] = this.pageSize;
+			cfg['proxy'] = {
+				actionMethods: {create: 'POST',destroy: 'POST',read: 'POST',update: 'POST'},
+				type : 'ajax',
+                extraParams : this.baseParams,
+				url : this.url || 'paginate/query.do',
+				reader : {
+					type : 'json',
+					root : 'result'
+				}
+			};
+		}
+		this.store = Ext.create('Ext.data.Store', cfg);
+	},
+
+	createColumns : function() {
+		var cols = [];
+		if(!this.noNeedRowNumber)//如果没有配置不需要行号,则默认加上
+			cols.push(new Ext.grid.RowNumberer({width:18,align : 'center'}));
+		var items = this.fields.items;
+		for (var i = 0; i < items.length; i++) {
+			var f = items[i];
+			var tempConfig = {
+				header : f.fieldLabel,
+				groupable : false,
+				dataIndex : f.name,
+				menuDisabled : true,
+				align : 'center'
+			};
+			if (f.renderer) {
+				tempConfig['renderer'] = f.renderer;
+			}
+			if(f.flex)
+				tempConfig['flex'] = f.flex;
+			if (f.xtype == 'datefield') {
+				Ext.apply(tempConfig, {
+							xtype : 'datecolumn',
+							format : f.format
+						});
+			}
+			if (f.hiddenColumn || (f.xtype == 'hidden' && !f.noHiddenColumn))
+				tempConfig['hidden'] = true;
+			if (f.columnWidth && f.columnWidth > 1)
+				tempConfig['width'] = f.columnWidth;
+			cols.push(tempConfig);
+		}
+		this.columns = cols;
+	},
+
+	createTbar : function() {
+
+		if (this.showTbar) {
+			this.tbar = Ext.create('Ext.toolbar.Toolbar');
+			if (!this.noShowAddBtn) {
+                var addBtn = new Ext.button.Button({
+                        text : '新增',
+                        iconCls : 'add',
+                        handler : Ext.bind(this.createRecord, this)
+                    });
+                this.addBtn = addBtn;
+                this.tbar.add(addBtn);
+            }
+			if (!this.noShowUpdateBtn) {
+				var updateBtn = new Ext.button.Button({
+							text : '修改',
+							iconCls : 'edit',
+							handler : Ext.bind(this.updateRecord, this)
+						});
+				this.updateBtn = updateBtn;
+				this.tbar.add(updateBtn);
+			}
+			if (!this.noShowRemoveBtn) {
+				var removeBtn = new Ext.button.Button({
+							text : '删除',
+                            tooltip : '注意:确认删除后将不中恢复',
+							iconCls : 'remove',
+							handler : Ext.bind(this.removeRecord, this)
+						});
+				this.removeBtn = removeBtn;
+				this.tbar.add(removeBtn);
+			}
+			if (this.showCopyBtn) {
+				var copyBtn = new Ext.button.Button({
+							text : '复制',
+							iconCls : 'genFile',
+							handler : Ext.bind(this.copyRecord, this)
+						});
+				this.copyBtn = copyBtn;
+				this.tbar.add(copyBtn);
+			}
+			if (this.showReportBtn) {
+				var reportBtn = new Ext.button.Button({
+							text : '导出Excel',
+							iconCls : 'report',
+							handler : Ext.bind(this.reportToExcel, this)
+						});
+				this.reportBtn = reportBtn;
+				this.tbar.add(reportBtn);
+			}
+            if (this.showSaveBtn) {
+                var saveBtn = new Ext.button.Button({
+                            text : '保存',
+                            iconCls : 'save',
+                            handler : Ext.bind(this.save, this)
+                        });
+                this.saveBtn = saveBtn;
+                this.tbar.add(saveBtn);
+            }
+		}
+	},
+
+	createBbar : function() {
+		if (this.showBbar) {
+			var pagesize_combo = new Ext.ux.EasyCombo({
+								data : CDM.pageSize,
+								width : 50,
+								emptyText : 15
+							});
+			pagesize_combo.on("select", function(comboBox) {
+				var	pageSize = comboBox.getValue();
+				Ext.apply(this.store,{pageSize : pageSize,currentPage:1});
+				this.store.load();
+			},this);
+			
+			var cfg = {
+						store : this.store,
+						pageSize : this.pageSize,
+						plugins: Ext.create('Ext.ux.ProgressBarPager', {}),
+						displayInfo : true,
+						height :28,
+						items : ['&nbsp;&nbsp;每页显示:',pagesize_combo]
+					};
+			if(this.noDisplayInfo){
+				cfg.displayInfo = false;
+				cfg.plugins = [];
+			}
+			this.bbar = Ext.create('Ext.PagingToolbar', cfg);
+		}
+	},
+
+	createRecord : function() {
+		// 如果有定义这个方法，则调用
+		if (this.parentPanel && Ext.isFunction(this.parentPanel.beforeWinShow)) {
+			if (!this.parentPanel.beforeWinShow())
+				return;
+		}
+		this.showWindow(null);// 传入这个将要打开的record，新增时为null
+		var form = this.getForm();
+		form.baseParams = {
+			create : true
+		};
+		// form.reset();
+		form.setValues(this.getEmptyRecord());
+		this.setFormBtnsVisible(null,form.baseParams.create);
+		// 如果有定义这个方法，则调用
+		if (this.parentPanel && Ext.isFunction(this.parentPanel.afterWinShow)) {
+			this.parentPanel.afterWinShow(form,this);
+		}
+	},
+	dbClickFun : function(){
+		if(this.parentPanel && Ext.isFunction(this.parentPanel.dbClickFun))
+			this.parentPanel.dbClickFun(this.getSelectedRecord(),this);
+		else
+			this.updateRecord();
+	},
+	updateRecord : function() {
+		var r = this.getSelectedRecord();
+		if (r != false) {
+			this.showWindow(r);// 传入这个将要打开的record，新增时为null
+			var form = this.getForm();
+			form.baseParams = {
+				create : false
+			};
+			form.loadRecord(r);
+			this.setFormBtnsVisible(null,form.baseParams.create);
+			// 如果有定义这个方法，则调用
+			if (this.parentPanel && Ext.isFunction(this.parentPanel.afterWinShow)) {
+				this.parentPanel.afterWinShow(form,this,r.data);
+			}
+		}
+	},
+
+	removeRecord : function() {
+		var r = this.getSelectedRecord();
+		if (r != false) {
+			Ext.Msg.confirm('提示', '确定删除吗?', function(btn) {
+						if (btn == 'yes') {
+							if (Ext.isFunction(this.parentPanel.removeRecord) && !Ext.isEmpty(r.get(this.recordId || 'id'))) {
+                                var issuc = this.parentPanel.removeRecord(this.store, r,this.gridName,this);
+								if (issuc) {// 如果能正确删除
+									this.getStore().remove(r);
+								} else {
+									Ext.Msg.alert('提示', '服务不可用,无法删除!');
+								}
+								// this.store.reload();
+							} else {
+								this.getStore().remove(r);
+							}
+						}
+					}, this);
+
+		}
+	},
+    save : function(){
+        this.parentPanel.saveRecords(this.store,this.gridName);
+    },
+	getSelectedRecord : function() {
+		var sm = this.getSelectionModel();
+		if (!sm.hasSelection()) {
+			Ext.Msg.alert('提示', '请选择一行数据');
+			return false;
+		} else {
+			return sm.getLastSelected();
+		}
+	},
+	loadData : function(id,r){
+		if (this.parentPanel && Ext.isFunction(this.parentPanel.loadProductData))
+			this.parentPanel.loadProductData(id,r);
+		else
+			this.getForm().loadRecord(r);
+	},
+	copyRecord : function() {
+		var r = this.getSelectedRecord();
+		if (r != false) {
+			var data = Ext.apply({}, r.data);
+			data[this.recordId] = '';// 清空本记录的主id
+			this.store.loadData([data], true);
+		}
+	},
+	getEmptyRecord : function() {
+		var r = {};
+		var fields = this.getReaderFields();
+		for (var i = 0; i < fields.length; i++) {
+			var f = fields[i].name;
+			r[f] = fields[i].defaultValue;
+		}
+        //如果有父类，在新增是把父类的id，传给子类
+        if(this.superior != null)
+        {
+            r[this.superior] = this.parentPanel.getSuperId();           
+        }        
+		return r;
+	},
+
+	submitRecord : function() {
+		if (!EasyUtil.isFormValid(this.getFormPanel()))
+			return;
+		var form = this.getForm();
+		var values = form.getFieldValues();
+		if (form.baseParams.create) {
+			if (this.parentPanel && Ext.isFunction(this.parentPanel.addRecord)) {
+				this.parentPanel.addRecord(this.store, form, values,this.gridName,this);
+				//this.store.reload();
+			} else {
+				this.store.loadData([values], true);
+			}
+			this.doLayout();
+		} else {
+			var r = this.getSelectedRecord();
+			if (this.parentPanel && Ext.isFunction(this.parentPanel.updateRecord)) {
+				this.parentPanel.updateRecord(this.store, r, values,form,this.gridName,this);
+				//this.store.reload();
+			} else {
+				r.beginEdit();
+				for (var name in values) {
+					r.set(name, values[name]);
+				}
+				r.endEdit();
+			}
+		}
+		this.hideWindow();
+	},
+
+	getForm : function() {
+		return this.getFormPanel().getForm();
+	},
+
+	getFormPanel : function() {
+		if (!this.gridForm) {
+			this.gridForm = this.createForm();
+		}
+		return this.gridForm;
+	},
+	reportToExcel : function() {
+		this.parentPanel.reportToExcel(this);
+	},
+	setAddBtnDisabled : function(disabled) {
+		this.addBtn.setDisabled(disabled);
+		if (this.copyBtn)
+			this.copyBtn.setDisabled(disabled);
+	},
+	getRemoveBtn : function() {
+		return this.removeBtn;
+	},
+	getUpdateBtn : function() {
+		return this.updateBtn;
+	},
+	setDisabledBtn : function(disabled) {
+		this.updateBtn.setDisabled(disabled);
+		this.addBtn.setDisabled(disabled);
+		if (this.removeBtn)
+			this.removeBtn.setDisabled(disabled);
+		if (this.copyBtn)
+			this.copyBtn.setDisabled(disabled);
+	},
+	createForm : function() {
+		/*
+		 * var items = []; for (var i = 0; i < this.fields.length; i++) { var f =
+		 * this.fields[i]; items.push({ fieldLabel: f, name: f }); }
+		 */
+		var form = Ext.create('Ext.form.Panel', {
+					bodyPadding : '10 20',
+					defaultType : 'textfield',
+					layout : {
+						type : 'table',
+						columns : 2
+					},
+                    defaults : {
+                        labelWidth : 80,
+                        style : {
+							margin : '3px 5px'
+						},
+                        readOnly : this.formItemsReadOnly
+                    },
+					items : this.fields.items,
+					dockedItems: [{
+						xtype: 'toolbar',
+			            dock: 'bottom',
+			            ui: 'footer',
+			            layout: {
+			                pack: 'center'
+			            },
+			            items : [{
+								text : '提交',
+								iconCls : 'accept',
+								handler : Ext.bind(this.submitRecord, this)
+							}, {
+								text : '重置',
+								iconCls : 'edit',
+								handler : function() {
+									form.getForm().reset();
+								}
+							}, {
+								text : '关闭',
+								iconCls : 'remove',
+								handler : Ext.bind(this.hideWindow, this)
+							}]
+					}]
+				});
+		this.gridForm = form;
+		if (this.formItemsReadOnly && !this.showFormBtn) {//如果是只读，则只显示关闭按钮
+			this.setFormBtnsVisible(false,false);
+		}
+		var producttrigger = form.down('producttrigger');
+		if(producttrigger){
+			producttrigger.parentPanel = this;
+		}
+		return form;
+	},
+	/**
+	 * 设置表单　提交　和　重置　按钮的显示，如果是新增，则全部展示，如果是更新，则隐藏"重置"，如果是只读，则都隐藏
+	 * @param {} visible
+	 */
+	setFormBtnsVisible : function(sbmitVisible,resetVisible){
+		var dockItems = this.getFormPanel().getDockedItems();
+		if(sbmitVisible != null)
+			dockItems[0].items.items[0].setVisible(sbmitVisible);
+		dockItems[0].items.items[1].setVisible(resetVisible);
+	},
+	showWindow : function(record) {
+		this.getWindow().show();
+		// 如果有定义这个方法，则调用
+		if (this.parentPanel && Ext.isFunction(this.parentPanel.applyRule)) {
+			this.parentPanel.applyRule(record);
+		}
+	},
+
+	hideWindow : function() {
+		this.getWindow().hide();
+	},
+
+	getWindow : function() {
+		if (!this.gridWindow) {
+			this.gridWindow = this.createWindow();
+		}
+		return this.gridWindow;
+	},
+	setFields : function(fields){
+		this.fields = fields;
+		if(this.gridForm)
+			this.gridForm = null;
+		if(this.gridWindow)
+			this.gridWindow = null;
+	},
+	createWindow : function() {
+		var formPanel = this.getFormPanel();
+		var win = Ext.create('Ext.window.Window', {
+					title : this.subWindowTitle,
+					closeAction : 'hide',
+					resizable : false,
+					modal : true,
+					border : false,
+					shim : false,
+					animCollapse : false,
+					items : [formPanel]
+				});
+
+		return win;
+	}
+});
