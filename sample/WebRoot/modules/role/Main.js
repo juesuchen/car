@@ -5,10 +5,10 @@
  * http://www.sencha.com/license
  */
 
-Ext.define('Ext.role.PrivilegeMainPanel', {
+Ext.define('Ext.role.Main', {
     extend: 'Ext.panel.Panel',
     requires: [
-        'Ext.role.PrivilegeElementsConfigs'
+        'Ext.role.Configs'
     ],
     
     initComponent : function(){
@@ -22,7 +22,7 @@ Ext.define('Ext.role.PrivilegeMainPanel', {
     },
     addPrivilegePanel : function(){
     	//定义查询表单
-    	this.queryForm = EasyUtil.getEasyQueryForm(Ext.bind(this.doQuery,this),privilegeElementsConfigs.getQueryFormItems(), 3);
+    	this.queryForm = EasyUtil.getEasyQueryForm(Ext.bind(this.doQuery,this),roleConfigs.getQueryFormItems(), 3);
 		//定义展示列表
 		var viewGridConfig = {
 		            xtype : 'easygrid',
@@ -34,21 +34,13 @@ Ext.define('Ext.role.PrivilegeMainPanel', {
 		            noNeddForceFit : false,
 		            needCheckboxColumn : true,
 		            subWindowTitle : '人员信息详情',
-		            baseParams : {queryId : 'SysInfoMapper.queryUserInfo'},
-		            fields : privilegeElementsConfigs.getQueryStaffFields()
+		            //baseParams : {queryId : 'SysInfoMapper.queryUserInfo'},
+		            fields : roleConfigs.getQueryFields()
 		        };
 		this.easyGrid = new Ext.ux.EasyGrid(viewGridConfig);
 		//定义权限树
-		var funtionNodes = [];
-		Ext.each(c_modules,function(item){
-			var childs = [];
-			Ext.each(item.children,function(fun){
-				childs.push({iconCls: 'fun', leaf: true, checked : false,text: fun.name, funCode : fun.type});
-			});
-			var cfg = {children:childs,iconCls: 'option', checked : false};
-			
-			funtionNodes.push(Ext.applyIf(cfg,{text: item.name, funCode : item.type}));
-		});
+		
+		var funtionNodes = roleConfigs.getFuntionNodes();
 		var toggle = false;
 		var tree = Ext.create('Ext.tree.Panel', {
 					region : 'east',

@@ -5,7 +5,7 @@ import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 import com.minisoft.controller.BaseController;
 
-public class GlobalActionInterceptor implements Interceptor {
+public class AuthenInterceptor implements Interceptor {
 
     @Override
     public void intercept(Invocation inv) {

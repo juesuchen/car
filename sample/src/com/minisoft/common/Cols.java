@@ -30,5 +30,8 @@ public interface Cols {
     String password = "password";
 
     String permission = "permission";
+    
+    String parentId = "parent_id";
+    
 
 }

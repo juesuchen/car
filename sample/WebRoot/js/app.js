@@ -15,7 +15,8 @@ var c_appRequires = ['Ext.ux.desktop.ShortcutModel','Ext.ux.Util','MyDesktop.Set
 
 //module can config the attributes ：name,className,winWidth,winHeight
 var c_modules = [
-                	{ name: '用户权限管理', className:'Ext.role.PrivilegeMainPanel'}
+                	{ name: '用户管理', className:'Ext.user.Main'},
+                	{ name: '角色管理', className:'Ext.role.Main'}
                	];
 
 
@@ -72,10 +73,10 @@ Ext.onReady(function() {
      },this).delay(1000);
 });
 
-var privilegeElementsConfigs;
+var roleConfigs,userConfigs;
 /*初始化各个模块的配置*/
 function initElementsConfigs(){
-	privilegeElementsConfigs = new Ext.role.PrivilegeElementsConfigs();
-	
-	privilegeElementsConfigs.init();
+	roleConfigs = new Ext.role.Configs();
+	userConfigs = new Ext.user.Configs();
+	//privilegeElementsConfigs.init();
 }

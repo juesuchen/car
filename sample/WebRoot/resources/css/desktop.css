@@ -224,6 +224,15 @@
     width: 64px;
     height: 64px;
 }
+.user-shortcut {
+    background-image: url(../images/shutcuts/member.png);
+    width: 64px;
+    height: 64px;
+}
+.user {
+	background-image: url(../images/shutcuts/member16x16.png);
+}
+
 .role-shortcut {
     background-image: url(../images/shutcuts/privilege.png);
     width: 64px;
@@ -232,7 +241,6 @@
 .role {
 	background-image: url(../images/shutcuts/privilege16x16.png);
 }
-
 .video {
     background-image: url(../images/gears.gif);
 }

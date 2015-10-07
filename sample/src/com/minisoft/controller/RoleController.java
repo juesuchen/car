@@ -1,5 +1,8 @@
 package com.minisoft.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import com.minisoft.service.RoleService;
 
 /**
@@ -11,5 +14,10 @@ public class RoleController extends BaseController {
 
     public void main() {
         render("main.jsp");
+    }
+    
+    public void getMenus() {
+    	List<Map<String, Object>> menus = roleService.getMenus();
+    	renderJson(menus);
     }
 }

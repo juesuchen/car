@@ -12,9 +12,10 @@ import com.jfinal.plugin.c3p0.C3p0Plugin;
 import com.jfinal.render.ViewType;
 import com.minisoft.controller.IndexController;
 import com.minisoft.controller.LoginController;
+import com.minisoft.controller.PaginateController;
 import com.minisoft.controller.RoleController;
 import com.minisoft.controller.UserController;
-import com.minisoft.inter.GlobalActionInterceptor;
+import com.minisoft.inter.AuthenInterceptor;
 import com.minisoft.model.Menu;
 import com.minisoft.model.Role;
 import com.minisoft.model.User;
@@ -37,6 +38,8 @@ public class SysConfig extends JFinalConfig {
         me.add("/user", UserController.class); // 第三个参数省略时默认与第一个参数值相同
         me.add("/login", LoginController.class, "/pages");
         me.add("/role", RoleController.class, "/pages");
+        me.add("/paginate", PaginateController.class);
+        
 
     }
 
@@ -62,7 +65,7 @@ public class SysConfig extends JFinalConfig {
      */
     public void configInterceptor(Interceptors me) {
         // 添加控制层全局拦截器
-        me.addGlobalActionInterceptor(new GlobalActionInterceptor());
+        me.addGlobalActionInterceptor(new AuthenInterceptor());
     }
 
     /**

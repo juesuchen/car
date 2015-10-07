@@ -61,10 +61,10 @@ Ext.define('Ext.ux.EasyGrid', {
 				actionMethods: {create: 'POST',destroy: 'POST',read: 'POST',update: 'POST'},
 				type : 'ajax',
                 extraParams : this.baseParams,
-				url : this.url || 'paginate/query.do',
+				url : this.url || 'paginate',
 				reader : {
 					type : 'json',
-					root : 'result'
+					root : 'list'
 				}
 			};
 		}
