@@ -2,7 +2,7 @@
 
 1： 使用 blog.sql 中的 sql 语句创建数据库与数据库表
 
-2: 修改 WebRoot/WEB-INF/a_little_config.txt 文件，填入正确的数据库连接用户名、密码
+2: 修改 WebRoot/WEB-INF/config.propertites 文件，填入正确的数据库连接用户名、密码
 
 3: 将项目导入 eclipse。推荐使用 Eclipse IDE for Java EE Developers， 版本：Eclipse Kepler (4.3.2) SR2，此版本天然支持 git
         下载地址:
