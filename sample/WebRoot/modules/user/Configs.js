@@ -33,8 +33,8 @@ Ext.define('Ext.user.Configs', {
     	fields.add(this.getRawByName('phone'));
     	fields.add(this.getRawByName('mobile'));
     	fields.add(this.getRawByName('email'));
-    	fields.add(this.getRawByName('updator'));
-    	fields.add(this.getRawByName('updateTime'));
+    	fields.add(this.getRawByName('update_by'));
+    	fields.add(this.getRawByName('update_date'));
     	fields.add(this.getRawByName('id'));
     	return fields;
     }

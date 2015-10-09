@@ -64,7 +64,8 @@ Ext.define('Ext.ux.EasyGrid', {
 				url : this.url || 'paginate',
 				reader : {
 					type : 'json',
-					root : 'list'
+					root : 'list',
+					totalProperty: 'totalRow'
 				}
 			};
 		}
