@@ -18,7 +18,9 @@ import com.minisoft.controller.UserController;
 import com.minisoft.inter.AuthenInterceptor;
 import com.minisoft.model.Menu;
 import com.minisoft.model.Role;
+import com.minisoft.model.RoleMenu;
 import com.minisoft.model.User;
+import com.minisoft.model.UserRole;
 
 public class SysConfig extends JFinalConfig {
     /**
@@ -58,6 +60,8 @@ public class SysConfig extends JFinalConfig {
         arp.addMapping("sys_user", User.class);
         arp.addMapping("sys_role", Role.class);
         arp.addMapping("sys_menu", Menu.class);
+        arp.addMapping("sys_user_role", UserRole.class);
+        arp.addMapping("sys_role_menu", RoleMenu.class);
     }
 
     /**

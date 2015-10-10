@@ -16,7 +16,7 @@ var c_appRequires = ['Ext.ux.desktop.ShortcutModel','Ext.ux.Util','MyDesktop.Set
 //module can config the attributes ：name,className,winWidth,winHeight
 var c_modules = [
                 	{ name: '用户管理', className:'Ext.user.Main'},
-                	{ name: '角色管理', className:'Ext.role.Main'}
+                	{ name: '角色权限管理', className:'Ext.role.Main'}
                	];
 
 

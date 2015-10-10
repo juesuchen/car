@@ -42,31 +42,24 @@ Ext.define('Ext.user.Main', {
     doQuery : function(){
     	EasyUtil.doEasyQuery(this.easyGrid,this.queryForm);
     },
-    dbClickFun : function(r){
-    	var url = 'sysinfo/getPrivilege.do';
-    	EasyUtil.easyAjax(url,{userId:r.get('id')},function(response, opts) {
-            var privilege = Ext.decode(response.responseText);
-            var records = this.tree.getView().getRecords(this.tree.getView().getNodes());
-            Ext.each(records,function(node){
-            	node.set('checked',privilege[node.raw.funCode]);
-            },this);
-        },this);
-    },
     addRecord : function(store, form){
     	EasyUtil.submitForm(form,'user/add',this,{isDoQuery:true});
     },
     updateRecord : function(store, r, values,form){
-    	EasyUtil.submitForm(form,'extjsoncontrollersuport/update.do',this,{entity : 'base.UserInfo',isDoQuery:true});
+    	EasyUtil.submitForm(form,'user/update',this,{isDoQuery:true});
     },
     afterWinShow : function(form){
     	form.findField('login_name').setDisabled(!form.baseParams.create);
     },
     removeRecord : function(store, r,gridName,grid){
     	var isSuc = false;
-    	EasyUtil.easyAjax('extjsoncontrollersuport/remove.do',{id : r.get('id'),entity : 'base.UserInfo',isDoQuery:true},
+    	EasyUtil.easyAjax('user/delete/' + r.get('id'),{isDoQuery:true},
                 function(response, opts) {
     				 var resObj = Ext.decode(response.responseText);
     				 isSuc = resObj.success;
+    				 if (isSuc) {
+    					 this.doQuery();
+    				 }
    		 		},this,true
     	);
     	return isSuc;

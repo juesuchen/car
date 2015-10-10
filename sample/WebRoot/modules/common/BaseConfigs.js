@@ -42,13 +42,13 @@ Ext.define('Ext.easy.BaseConfigs', {
     /*根据配置名称获取配置项，会根据标签加上必须的验证*/
     getByName : function(name,colspan){
         var cfg = this.getRawByName(name);
-        return this.getMarkCfg(cfg);
+        return this.getMarkCfg(cfg,colspan);
     },
     /*根据配置名称获取配置项，但不会根据标签加上必须的验证*/
     getRawByName : function(name){
         return Ext.apply({},this.get(name));
     },
-    getMarkCfg : function (cfg) {
+    getMarkCfg : function (cfg,colspan) {
     	if(cfg.required){
             Ext.apply(cfg,{allowBlank:false,blankText:'此字段不能为空',labelSeparator : '<font color="red">*</font>'});
         }
@@ -60,7 +60,7 @@ Ext.define('Ext.easy.BaseConfigs', {
     /*根据配置名称获取配置项，会根据标签加上必须的验证*/
     getModelByName : function(name,colspan){
         var cfg = this.getRawModelByName(name)
-        return this.getMarkCfg(cfg);;
+        return this.getMarkCfg(cfg,colspan);;
     },
     /*根据配置名称获取配置项，但不会根据标签加上必须的验证*/
     getRawModelByName : function(name){

@@ -8,6 +8,7 @@ import java.util.Map;
 import com.jfinal.plugin.activerecord.Record;
 import com.minisoft.common.Cols;
 import com.minisoft.model.Menu;
+import com.minisoft.model.RoleMenu;
 import com.minisoft.model.User;
 import com.minisoft.utils.Digests;
 
@@ -43,6 +44,7 @@ public class RoleService {
 				Map<String,Object> node = maps.get(pid);
 				List<Map<String,Object>> children= (List<Map<String, Object>>) node.get("children");
 				Map<String,Object> item = new HashMap<String, Object>();
+				item.put("id", id);
 				item.put("iconCls", "fun");
 				item.put("text", name);
 				item.put("funCode", funCode);
@@ -51,6 +53,7 @@ public class RoleService {
 				children.add(item);
 			} else {
 				Map<String,Object> node = new HashMap<String, Object>();
+				node.put("id", id);
 				node.put("iconCls", "option");
 				node.put("text", name);
 				node.put("funCode", funCode);
@@ -64,5 +67,15 @@ public class RoleService {
     	return result;
     	
     }
+
+	public List<Menu> getMenusByRole(String rid) {
+		return Menu.me.getMenusByRole(rid);
+	}
+
+	public boolean savePrivilege(String roleIdsStr, String privilegesStr) {
+		String[] roleIds = roleIdsStr.split(",");
+    	String[] privileges = privilegesStr.split(",");
+    	return RoleMenu.me.savePrivilege(roleIds,privileges);
+	}
 
 }

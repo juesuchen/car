@@ -1,15 +1,18 @@
 package com.minisoft.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jfinal.kit.HashKit;
 import com.minisoft.common.Cols;
 import com.minisoft.model.Menu;
 import com.minisoft.model.User;
 import com.minisoft.service.RoleService;
 import com.minisoft.service.UserService;
 import com.minisoft.utils.BeanUtil;
+import com.minisoft.utils.Digests;
 import com.minisoft.utils.IdGen;
 
 /**
@@ -32,17 +35,42 @@ public class UserController extends BaseController {
         renderJson(map);
     }
     
+    public void get() {
+    	String id = getPara();
+    	User user = User.me.findById(id);
+    	renderJson(user);
+    }
+    
     public void add() throws Exception {
     	User user = BeanUtil.getModel(User.class, getParaMap());
     	user.set(Cols.id, IdGen.uuid());
+    	User loginUser = getLoginUser();
+    	String pass = user.getStr(Cols.password);
+    	user.set(Cols.password, HashKit.sha256(pass))
+    		.set(Cols.creator, loginUser.getStr(Cols.name)).set(Cols.createTime, new Date());
     	boolean result = user.save();
+    	renderJson(SUCCESS,result);
     }
     
-    public void update() {
-    	
+    public void update() throws Exception {
+    	User user = BeanUtil.getModel(User.class, getParaMap());
+    	User loginUser = getLoginUser();
+    	user.set(Cols.updator, loginUser.getStr(Cols.name)).set(Cols.updateTime,  new Date());
+    	String pass = user.getStr(Cols.password);
+    	if (pass.length() != 64) {
+    		user.set(Cols.password, HashKit.sha256(pass));
+    	}
+    	boolean result = user.update();
+    	renderJson(SUCCESS,result);
     }
-    
     public void delete() {
-    	
+    	String id = getPara();
+    	boolean result = User.me.deleteUserById(id);
+    	renderJson(SUCCESS,result);
+    }
+    
+    public void logout() {
+    	getSession().invalidate();
+    	renderJson(SUCCESS,true);
     }
 }

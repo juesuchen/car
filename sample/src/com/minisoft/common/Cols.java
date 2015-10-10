@@ -10,6 +10,13 @@ package com.minisoft.common;
 public interface Cols {
     /*** common fields ***/
     String id = "id";
+    
+    String roleId = "role_id";
+    
+    String menuId = "menu_id";
+    
+    String userId = "user_id";
+    
 
     String delflag_i = "del_flag";
 

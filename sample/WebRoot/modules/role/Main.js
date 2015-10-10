@@ -18,9 +18,9 @@ Ext.define('Ext.role.Main', {
         this.layout = 'border';
         me.callParent();
         
-        this.addPrivilegePanel();
+        this.addPanel();
     },
-    addPrivilegePanel : function(){
+    addPanel : function(){
     	//定义查询表单
     	this.queryForm = EasyUtil.getEasyQueryForm(Ext.bind(this.doQuery,this),roleConfigs.getQueryFormItems(), 3);
 		//定义展示列表
@@ -32,9 +32,8 @@ Ext.define('Ext.role.Main', {
 		            showBbar : true,
 		            parentPanel :this,
 		            noNeddForceFit : false,
-		            needCheckboxColumn : true,
-		            subWindowTitle : '人员信息详情',
-		            //baseParams : {queryId : 'SysInfoMapper.queryUserInfo'},
+		            subWindowTitle : '角色信息详情',
+		            baseParams : {queryId : roleConfigs.getModel()},
 		            fields : roleConfigs.getQueryFields()
 		        };
 		this.easyGrid = new Ext.ux.EasyGrid(viewGridConfig);
@@ -108,19 +107,20 @@ Ext.define('Ext.role.Main', {
     doQuery : function(){
     	this.tree.expandAll();
     	EasyUtil.doEasyQuery(this.easyGrid,this.queryForm);
+    	this.uncheck();
     },
     save : function(){
     	var rs = this.easyGrid.getSelectionModel().getSelection();
 		if(rs.length == 0){
-			Ext.Msg.alert('操作提示', '请选择人员!');
+			Ext.Msg.alert('操作提示', '请先选择角色。');
 			return;
 		}
-		var staffIds = '';
+		var roleIds = '';
 		Ext.each(rs,function(r){
-			if(staffIds.length > 0){
-                staffIds += ',';
+			if(roleIds.length > 0){
+                roleIds += ',';
             }
-			staffIds += r.get('id');
+			roleIds += r.get('id');
 		});
 		//获取所选权限
 		var privilege = '', selNodes = this.tree.getChecked();
@@ -128,22 +128,25 @@ Ext.define('Ext.role.Main', {
             if(privilege.length > 0){
                 privilege += ',';
             }
-            privilege += node.raw.funCode;
+            privilege += node.raw.id;
         });
-        var url = 'sysinfo/savePrivilege.do';
-    	EasyUtil.easyAjax(url,{userIds:staffIds,privileges:privilege},function(response, opts) {
+        var url = 'role/savePrivilege';
+    	EasyUtil.easyAjax(url,{roleIds:roleIds,privileges:privilege},function(response, opts) {
             var obj = Ext.decode(response.responseText);
             this.doQuery();
-            var records = this.tree.getView().getRecords(this.tree.getView().getNodes());
-            Ext.each(records,function(node){
-            	node.set('checked',false);
-            },this);
+            this.uncheck();
             EasyUtil.alertMsg(obj.success);
         },this);
     },
+    uncheck : function() {
+    	var records = this.tree.getView().getRecords(this.tree.getView().getNodes());
+        Ext.each(records,function(node){
+        	node.set('checked',false);
+        },this);
+    },
     dbClickFun : function(r){
-    	var url = 'sysinfo/getPrivilege.do';
-    	EasyUtil.easyAjax(url,{userId:r.get('id')},function(response, opts) {
+    	var url = 'role/getPrivilege/'+r.get('id');
+    	EasyUtil.easyAjax(url,{},function(response, opts) {
             var privilege = Ext.decode(response.responseText);
             var records = this.tree.getView().getRecords(this.tree.getView().getNodes());
             Ext.each(records,function(node){
@@ -152,20 +155,20 @@ Ext.define('Ext.role.Main', {
         },this);
     },
     addRecord : function(store, form){
-    	EasyUtil.submitForm(form,'extjsoncontrollersuport/save.do',this,{entity : 'base.UserInfo',isDoQuery:true});
+    	EasyUtil.submitForm(form,'role/add',this,{isDoQuery:true});
     },
     updateRecord : function(store, r, values,form){
-    	EasyUtil.submitForm(form,'extjsoncontrollersuport/update.do',this,{entity : 'base.UserInfo',isDoQuery:true});
-    },
-    afterWinShow : function(form){
-    	form.findField('loginName').setDisabled(!form.baseParams.create);
+    	EasyUtil.submitForm(form,'role/update',this,{isDoQuery:true});
     },
     removeRecord : function(store, r,gridName,grid){
     	var isSuc = false;
-    	EasyUtil.easyAjax('extjsoncontrollersuport/remove.do',{id : r.get('id'),entity : 'base.UserInfo',isDoQuery:true},
+    	EasyUtil.easyAjax('role/delete/' + r.get('id'),{isDoQuery:true},
                 function(response, opts) {
     				 var resObj = Ext.decode(response.responseText);
     				 isSuc = resObj.success;
+    				 if (isSuc) {
+    					 this.doQuery();
+    				 }
    		 		},this,true
     	);
     	return isSuc;

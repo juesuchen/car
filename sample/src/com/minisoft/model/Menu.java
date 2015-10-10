@@ -39,6 +39,11 @@ public class Menu extends Model<Menu> {
         return Menu.me.find(sql, paras);
     }
     
+    public List<Menu> getMenusByRole(String roleId) {
+        String sql = "select m.id,m.parent_id,m.name,m.permission from sys_role r,sys_role_menu rm,sys_menu m where r.del_flag = 0 and m.del_flag=0 and r.id=rm.role_id and m.id = rm.menu_id and r.id = ?";
+        return Menu.me.find(sql, roleId);
+    }
+    
     public List<Menu> getMenus() {
         String sql = "SELECT * FROM sys_menu where del_flag = 0 order by sort";
         return Menu.me.find(sql);

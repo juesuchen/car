@@ -6,6 +6,8 @@ import com.minisoft.model.User;
 public class BaseController extends Controller {
 
     private static final String LOGININFO = "loginUser";
+    
+    protected static final String SUCCESS = "success";
 
     protected void setLoginUser(User user) {
         setSessionAttr(LOGININFO, user);

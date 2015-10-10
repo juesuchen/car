@@ -4,6 +4,8 @@ import java.security.MessageDigest;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.jfinal.kit.HashKit;
+
 public class Digests {
 
     private static final String SHA1 = "SHA-1";
@@ -55,7 +57,12 @@ public class Digests {
     }
 
     public static void main(String[] args) throws Exception {
-        String input = "我是adbXXJKDFJKS";
+        String input = "admin123";
+        System.out.println(HashKit.sha256(input));
+        System.out.println(HashKit.sha1(input));
+        System.out.println(HashKit.md5(input));
+        input = "我是adbXXJKDFJKS1213";
+        System.out.println(HashKit.sha1(input));
         System.out.println(sha1Str(input));
 
     }

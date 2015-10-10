@@ -1,5 +1,9 @@
 package com.minisoft.model;
 
+import java.sql.SQLException;
+
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Model;
 
 /**
@@ -40,5 +44,15 @@ public class User extends Model<User> {
     public User findByUserid(String userid) {
         return me.findFirst("select * from sys_user where login_name = ? and del_flag = 0", userid);
     }
+
+	public boolean deleteUserById(final String id) {
+		return Db.tx(new IAtom() {
+			public boolean run() throws SQLException {
+				me.deleteById(id);
+				Db.update("delete from sys_user_role where user_id = ?",id);
+				return true;
+			}
+		});
+	}
 
 }

@@ -92,7 +92,9 @@ Ext.define('MyDesktop.App', {
     onLogout: function () {
         Ext.Msg.confirm('登出', '确认退出登陆?',function(btn){
         	if (btn == 'yes') {
-        		window.location = 'login.html';
+        		EasyUtil.easyAjax('user/logout',null,function(){
+        			window.location = 'login';
+        		});
         	}
         });
     },

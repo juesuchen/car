@@ -28,6 +28,5 @@ public class LoginController extends BaseController {
         } else {
             setAttr("message", "用户名或密码错误。");
         }
-
     }
 }
