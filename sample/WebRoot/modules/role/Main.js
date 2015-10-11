@@ -134,7 +134,6 @@ Ext.define('Ext.role.Main', {
     	EasyUtil.easyAjax(url,{roleIds:roleIds,privileges:privilege},function(response, opts) {
             var obj = Ext.decode(response.responseText);
             this.doQuery();
-            this.uncheck();
             EasyUtil.alertMsg(obj.success);
         },this);
     },
